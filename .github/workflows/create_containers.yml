@@ -1,0 +1,92 @@
+name: Create Multiarch Mosquitto Go Auth Container 
+
+on: 
+    push:
+    schedule:
+    - cron: '0 0 * * *'  # every day at midnight
+
+jobs:
+    create-container-mos1:
+        name: Create Multiarch Mosquitto Go Auth Container
+        runs-on: ubuntu-latest
+        steps:
+          - name: Get latest Mosquitto Go Auth release tag
+            id: remote-repo-release
+            uses: pozetroninc/github-action-get-latest-release@master
+            with:
+              repository:  iegomez/mosquitto-go-auth 
+              excludes: prerelease, draft
+          - name: Check out latest Mosquitto Go Auth release
+            uses: actions/checkout@v2
+            with:
+                repository:  iegomez/mosquitto-go-auth
+                ref: ${{ steps.remote-repo-release.outputs.release }}
+          - name: Check out local Dockerfile
+            uses: actions/checkout@v2
+            with:
+                path: ./self
+          - name: Copy Dockerfile
+            run: cp ./self/Dockerfile ./Dockerfile
+          - name: Set up QEMU
+            uses: docker/setup-qemu-action@v1
+          - name: Set up Docker Buildx
+            id: buildx
+            uses: docker/setup-buildx-action@v1
+          - name: Available platforms
+            run: echo ${{ steps.buildx.outputs.platforms }}
+          - name: Login to Docker Hub
+            uses: docker/login-action@v1
+            with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+          - name: Build and push
+            uses: docker/build-push-action@v2
+            with:
+                context: .
+                platforms: linux/arm64,linux/arm/v7
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/mosquitto-go-auth-mos1:${{ steps.remote-repo-release.outputs.release }}
+                
+    create-container-mos2:
+        name: Create Multiarch Mosquitto Go Auth Container
+        runs-on: ubuntu-latest
+        steps:
+          - name: Get latest Mosquitto Go Auth release tag
+            id: remote-repo-release
+            uses: pozetroninc/github-action-get-latest-release@master
+            with:
+              repository:  iegomez/mosquitto-go-auth 
+              excludes: prerelease, draft
+          - name: Check out latest Mosquitto Go Auth release
+            uses: actions/checkout@v2
+            with:
+                repository:  iegomez/mosquitto-go-auth
+                ref: ${{ steps.remote-repo-release.outputs.release }}
+          - name: Check out local Dockerfile
+            uses: actions/checkout@v2
+            with:
+                path: ./self
+          - name: Copy Dockerfile
+            run: cp ./self/Dockerfile ./Dockerfile
+          - name: Set Mosquitto version
+            run: sed -i 's/ARG MOSQUITTO_VERSION=1.6.14/ARG MOSQUITTO_VERSION=2.0.9/' Dockerfile
+          - name: Set up QEMU
+            uses: docker/setup-qemu-action@v1
+          - name: Set up Docker Buildx
+            id: buildx
+            uses: docker/setup-buildx-action@v1
+          - name: Available platforms
+            run: echo ${{ steps.buildx.outputs.platforms }}
+          - name: Login to Docker Hub
+            uses: docker/login-action@v1
+            with:
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+          - name: Build and push
+            uses: docker/build-push-action@v2
+            with:
+                context: .
+                platforms: linux/arm64,linux/arm/v7
+                push: true
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/mosquitto-go-auth-mos2:${{ steps.remote-repo-release.outputs.release }}
+          
