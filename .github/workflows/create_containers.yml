@@ -43,7 +43,7 @@ jobs:
             uses: docker/build-push-action@v2
             with:
                 context: .
-                platforms: linux/arm64,linux/arm/v7
+                platforms: linux/amd64,linux/arm64,linux/arm/v7
                 push: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/mosquitto-go-auth-mos1:${{ steps.remote-repo-release.outputs.release }}
                 
@@ -86,7 +86,7 @@ jobs:
             uses: docker/build-push-action@v2
             with:
                 context: .
-                platforms: linux/arm64,linux/arm/v7
+                platforms: linux/amd64,linux/arm64,linux/arm/v7
                 push: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/mosquitto-go-auth-mos2:${{ steps.remote-repo-release.outputs.release }}
           
