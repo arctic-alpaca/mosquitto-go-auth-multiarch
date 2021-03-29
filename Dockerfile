@@ -42,9 +42,9 @@ RUN tar xzvf mosquitto-${MOSQUITTO_VERSION}.tar.gz
 
 # Build mosquitto.
 RUN if [ "$(echo $MOSQUITTO_VERSION | head -c 1)" != 2 ]; then \
-   cd mosquitto-${MOSQUITTO_VERSION} make WITH_WEBSOCKETS=yes && make install ; \
+   cd mosquitto-${MOSQUITTO_VERSION} && make WITH_WEBSOCKETS=yes && make install ; \
    else \
-   cd mosquitto-${MOSQUITTO_VERSION} make WITH_WEBSOCKETS=yes CFLAGS="-Wall -O2 -I/build/lws/include" LDFLAGS="-L/build/lws/lib"  && make install ; \
+   cd mosquitto-${MOSQUITTO_VERSION} && make CFLAGS="-Wall -O2 -I/build/lws/include" LDFLAGS="-L/build/lws/lib" WITH_WEBSOCKETS=yes && make install ; \
    fi
 
 # Use golang:latest as a builder for the Mosquitto Go Auth plugin.
