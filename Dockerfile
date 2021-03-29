@@ -10,7 +10,7 @@ RUN apt update && apt install -y wget build-essential cmake libssl-dev  libcjson
 
 # Get libwebsocket. Debian's libwebsockets is too old for Mosquitto version > 2.x so it gets built from source.
 RUN if [ "$(echo $MOSQUITTO_VERSION | head -c 1)" != 2 ]; then \
-        apt install -y libwebsockets8 ; \
+        apt install -y libwebsockets-dev ; \
     else \
         export LWS_VERSION=2.4.2  && \
         wget https://github.com/warmcat/libwebsockets/archive/v${LWS_VERSION}.tar.gz -O /tmp/lws.tar.gz && \
