@@ -89,7 +89,7 @@ RUN go build -buildmode=c-archive go-auth.go && \
 #Start from a new image.
 FROM debian:stable-slim
 
-RUN apt update && apt install -y libwebsockets8 libc-ares2 openssl uuid
+RUN apt update && apt install -y libwebsockets8 libc-ares2 openssl uuid tini
 
 RUN mkdir -p /var/lib/mosquitto /var/log/mosquitto 
 RUN groupadd mosquitto \
@@ -105,4 +105,5 @@ COPY --from=mosquitto_builder /usr/local/sbin/mosquitto /usr/sbin/mosquitto
 
 EXPOSE 1883 1884
 
-ENTRYPOINT ["sh", "-c", "/usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf" ]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD [ "/usr/sbin/mosquitto" ,"-c", "/etc/mosquitto/mosquitto.conf" ]
